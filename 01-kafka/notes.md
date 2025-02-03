@@ -182,45 +182,23 @@ bin/kafka-console-consumer.sh --bootstrap-server localhost:39092 \
 - 第五步 发送消息
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 运行项目(docker)
+### 2.4 docker纯享版
+- 运行项目(docker)
+```bash
 docker pull ubuntu:latest
 docker run -it ubuntu:latest /bin/bash
+```
 
-# 更新apt
+- 更新apt，安装必要插件
+```bash
 apt update
 apt upgrade
 
 apt install wget
 apt install vim
-apt-get install openjdk-8-jdk
+apt install openjdk-8-jdk
 apt install maven
-
-wget https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
-tar -xzf kafka_2.13-3.9.0.tgz
-
-mvn archetype:generate \
--DarchetypeGroupId=org.apache.kafka \
--DarchetypeArtifactId=streams-quickstart-java \
--DarchetypeVersion=3.9.0 \
--DgroupId=streams.examples \
--DartifactId=streams-quickstart \
--Dversion=0.1 \
--Dpackage=myapps
+```
+接着就可以跟着单机模式进行操作了
 
 
-<!-- 切换java版本 -->
-sudo update-alternatives --config javac
