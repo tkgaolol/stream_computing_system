@@ -202,3 +202,8 @@ apt install maven
 接着就可以跟着单机模式进行操作了
 
 
+## 参考网站
+- https://kafka.apache.org/39/documentation/streams/tutorial
+- https://kafka.apache.org/quickstart
+- https://kafka.apache.org/documentation/#docker
+- https://github.com/apache/kafka/tree/trunk/docker/examples
