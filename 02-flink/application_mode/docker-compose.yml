@@ -1,29 +1,39 @@
-version: "2.2"
+version: "3.8"
 services:
   jobmanager:
-    image: flink:latest
+    build: .
     ports:
       - "8081:8081"
-    command: standalone-job --job-classname com.job.ClassName [--jars /path/to/artifact1,/path/to/artifact2] [--job-id <job id>] [--fromSavepoint /path/to/savepoint] [--allowNonRestoredState] [job arguments]
-    volumes:
-      - /host/path/to/job/artifacts:/opt/flink/usrlib
+    # if you have only one job, you can use this command
+    command: standalone-job --hostname host.docker.internal --port 9999
+    # otherwise, you need to specify the job class name
+    # command: standalone-job --job-classname org.apache.flink.streaming.examples.socket.SocketWindowWordCount --hostname host.docker.internal --port 9999
     environment:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        parallelism.default: 2        
+        parallelism.default: 1
+    networks:
+      - flink-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   taskmanager:
-    image: flink:latest
+    build: .
     depends_on:
       - jobmanager
     command: taskmanager
-    scale: 1
-    volumes:
-      - /host/path/to/job/artifacts:/opt/flink/usrlib
     environment:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2
-        parallelism.default: 2        
+        taskmanager.numberOfTaskSlots: 1
+    networks:
+      - flink-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  flink-network:
+    driver: bridge
+    external: true

@@ -94,7 +94,7 @@ tail -f log/flink-*-taskexecutor-*.out
 rm log/*
 ```
 
-### 2.3 docker集群(SocketWindowWordCount 需要三个terminal)
+### 2.3 docker集群 session_mode(SocketWindowWordCount 需要三个terminal)
 - 第一步 在background启动集群
 ``` bash
 cd 02-flink/application_mode
@@ -127,29 +127,33 @@ docker compose down
 
 - 可以通过localhost:8081 访问 web ui
 
+### 2.4 docker集群 application_mode
+- 第一步 进入application_mode目录
+```bash
+cd 02-flink/application_mode
+FLINK_PROPERTIES="jobmanager.rpc.address: jobmanager"
+```
 
+- 第二步 创建网络
+```bash
+docker network create flink-network
+```
 
+- 第三步 启动监听端口并发送信息
+```bash
+nc -lk 9999
+```
 
+- 第四步 提交作业
+```bash
+docker compose up --build
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- 第五步 终结集群并删除网络
+```bash
+docker compose down -v
+docker network prune
+```
 
 ## 参考网站
 - https://github.com/apache/flink
