@@ -1,7 +1,4 @@
-Apache Flink 是一个分布式计算框架，它能够对有界和无界的数据流进行高效的处理。
-
-    有界数据：即批数据（离线数据），具有已定义的起止位置，属于静态数据集
-    无界数据：即流式数据（实时数据），无已定义的结束位置，属于动态数据集# Flink 学习笔记
+# Flink 学习笔记
 
 ## 1. Flink介绍
 ### What is Flink
@@ -165,6 +162,3 @@ docker network prune
 
 - https://magicpenta.github.io/docs/flink/Flink%20%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/
 
-- https://github.com/apache/flink-connector-kafka/tree/main
-- https://github.com/lydtechconsulting/flink-kafka-connector
-- https://nightlies.apache.org/flink/flink-docs-master/zh/docs/connectors/datastream/kafka/
