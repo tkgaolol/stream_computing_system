@@ -170,6 +170,11 @@ docker exec -it kafka kafka-console-producer \
 
 - 第八步 提交作业
 ```bash
+wget https://dlcdn.apache.org/flink/flink-1.20.0/flink-1.20.0-bin-scala_2.12.tgz --no-check-certificate
+
+tar -xzf flink-1.20.0-bin-scala_2.12.tgz
+cd flink-1.20.0
+
 ./bin/start-cluster.sh
 
 ./bin/flink run ../flink-connector-kafka/flink-connector-kafka-e2e-tests/flink-streaming-kafka-test/target/KafkaExample.jar \
