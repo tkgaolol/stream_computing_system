@@ -4,6 +4,9 @@
 [submodule "02-flink/flink"]
 	path = 02-flink/flink
 	url = https://github.com/apache/flink.git
-[submodule "03-kafka&flink/flink-kafka-connector"]
-	path = 03-kafka&flink/flink-kafka-connector
+[submodule "03-kafka&flink/version2/flink-kafka-connector"]
+	path = 03-kafka&flink/version2/flink-kafka-connector
 	url = https://github.com/lydtechconsulting/flink-kafka-connector.git
+[submodule "03-kafka&flink/version1/flink-connector-kafka"]
+	path = 03-kafka&flink/version1/flink-connector-kafka
+	url = https://github.com/apache/flink-connector-kafka.git
