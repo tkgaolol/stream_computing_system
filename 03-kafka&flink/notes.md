@@ -1,117 +1,122 @@
 # Kafka & Flink 学习笔记
 
 ## 1. 架构
-
-## 2. 咋用
+![alt text](../media/03-1.png)
+## 2. 这玩意儿咋用
 ### 2.1 requirements
 - java 17
 - maven 3.8.6
 - docker
-- docker-compose
+- docker-compose（应该与docker一起安装）
 
-### 2.2 单机模式(SocketWindowWordCount 需要三个terminal)
-- 第一步 进入flink目录
+### 2.2 flink application_mode
+- 第一步 创建workspace
 ```bash
-wget https://dlcdn.apache.org/flink/flink-1.20.0/flink-1.20.0-bin-scala_2.12.tgz --no-check-certificate
-
-tar -xzf flink-1.20.0-bin-scala_2.12.tgz
-cd flink-1.20.0
+git clone https://github.com/lydtechconsulting/flink-kafka-connector.git
+cd flink-kafka-connector
 ```
 
-- 第二步 启动集群
+- 第二步 安装依赖
 ```bash
-./bin/start-cluster.sh
+mvn clean install
+# need to check the version of artifact component-test-framework is 3.8.0 in pom.xml
 ```
-我们启动了2个进程：JobManager的JVM 和 TaskManager的JVM。JobManager正在为Web界面提供可访问的Web界面： Localhost：8081 。
 
-- 第三步 打开浏览器访问ip:8081
-
-- 第四步 开启端口
+- 第三步 启动集群
 ```bash
-nc -lk 9999
+docker compose up -d
+```
+
+- 第四步 创建topic
+```
+docker exec -ti kafka kafka-topics --create --topic=demo-inbound --partitions 3 --if-not-exists --bootstrap-server=kafka:9093
+docker exec -ti kafka kafka-topics --create --topic=demo-outbound --partitions 3 --if-not-exists --bootstrap-server=kafka:9093
+docker exec -ti kafka kafka-topics --list --bootstrap-server=kafka:9093
 ```
 
 - 第五步 提交作业（job）
+访问 Flink 控制台：
+```
+localhost:8081
+```
+
+- 点击 `Add New`
+- 从 `target` 目录选择 `flink-kafka-connector-1.0.0.jar`，点击该 jar 包
+- 在 `Program Arguments` 中输入 Kafka 引导服务器地址：`kafka:9093`
+- 点击 `Submit` 提交
+
+
+另外，也可以手动运行 Flink 应用（或启用远程调试手动运行）：
+```
+java -jar target/flink-kafka-connector-1.0.0.jar
+```
+
+远程调试
+使用方法：
+- 启动应用程序时使用此命令
+- 在你的IDE中（如IntelliJ IDEA或Eclipse）：
+- 设置"远程JVM调试"配置
+- 指向localhost:5005
+- 启动调试会话
+```
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/flink-kafka-connector-1.0.0.jar
+```
+
+- 第六步 发送信息
 ```bash
-./bin/flink run examples/streaming/SocketWindowWordCount.jar --port 9999
+docker exec -ti kafka kafka-console-producer --topic demo-inbound --bootstrap-server kafka:9093
+
+{"name":"John Smith"}
 ```
 
-- 第六步 发送信息并查看输出
+- 第七步 消费信息
 ```bash
-tail -f log/flink-*-taskexecutor-*.out
+docker exec -ti kafka kafka-console-consumer --topic demo-outbound --bootstrap-server kafka:9093 --from-beginning
 ```
-- 第七步 停止集群
-```bash
-./bin/stop-cluster.sh
-```
+预期输出（名字已转为大写）：`{"name":"JOHN SMITH"}`
 
-- 删除所有信息
-```bash
-rm log/*
-```
-
-### 2.3 docker集群 session_mode(SocketWindowWordCount 需要三个terminal)
-- 第一步 在background启动集群
-``` bash
-cd 02-flink/application_mode
-# or
-cd 02-flink/session_mode
-
-docker compose up
-
-# Scale the cluster up or down to N TaskManagers
-docker compose scale taskmanager=<N>
-```
-
-- 第二步 访问JobManager容器 并发送信息
-```bash
-docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
-apt update && apt install netcat -y
-nc -lk 9999
-```
-
-- 第三步 提交作业
-```bash
-docker exec -it $(docker ps --filter name=jobmanager --format={{.ID}}) /bin/sh
-./bin/flink run examples/streaming/SocketWindowWordCount.jar --hostname jobmanager --port 9999
-```
-
-- 第四步 终结集群
-```bash
-docker compose down
-```
-
-- 可以通过localhost:8081 访问 web ui
-
-### 2.4 docker集群 application_mode
-- 第一步 进入application_mode目录
-```bash
-cd 02-flink/application_mode
-FLINK_PROPERTIES="jobmanager.rpc.address: jobmanager"
-```
-
-- 第二步 创建网络
-```bash
-docker network create flink-network
-```
-
-- 第三步 启动监听端口并发送信息
-```bash
-nc -lk 9999
-```
-
-- 第四步 提交作业
-```bash
-docker compose up --build
-```
-
-- 第五步 终结集群并删除网络
+- 第八步 停止集群
 ```bash
 docker compose down -v
+```
+### 2.3 component_test_framework
+![alt text](../media/03-2.png)
+
+- 安装依赖
+```
+mvn clean install
+```
+
+- 构建docker镜像
+```
+docker build -t ct/flink-kafka-connector:latest .
+```
+
+- 运行测试
+```
+mvn test -Pcomponent
+```
+
+- 运行测试并保持容器运行
+```
+mvn test -Pcomponent -Dcontainers.stayup
+```
+
+- 手动清理（如果容器未关闭）
+```
+docker rm -f $(docker ps -aq)
+```
+
+- 进一步清理（如果网络/其他问题）
+```
+docker system prune
+docker volume prune
 docker network prune
 ```
 
 ## 参考网站
 - https://github.com/apache/flink-connector-kafka/tree/main
 - https://github.com/lydtechconsulting/flink-kafka-connector
+- https://github.com/lydtechconsulting/component-test-framework?tab=readme-ov-file
 - https://nightlies.apache.org/flink/flink-docs-master/zh/docs/connectors/datastream/kafka/
+- https://www.lydtechconsulting.com/blog-flink-kafka-connector.html
