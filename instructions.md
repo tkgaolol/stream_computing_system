@@ -19,5 +19,6 @@ git submodule update --init --recursive
 
 ## 切换java版本
 ```bash
+sudo update-alternatives --config java
 sudo update-alternatives --config javac
 ```

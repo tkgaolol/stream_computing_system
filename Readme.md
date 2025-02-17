@@ -26,13 +26,13 @@
 #### 1.1 设计基础流式作业 API
 在实际开始设计你们的简易流计算系统前，你们需要首先设计并实现一套流计算 API 来编写流计算应用。 你们需要定义一个抽象的数据结构来表示一个无界的数据流（后文称之为 DataStream），然后定义一套 API，你们的 API 应该能：
 ##### 1. 支持下面 5 个基础算子：
-    | 算子 | 输入 | 输出 |
-    |------|------|------|
-    | Source | Kafka | DataStream |
-    | Sink | DataStream | 外部文件 |
-    | Map | DataStream | DataStream |
-    | KeyBy | DataStream | DataStream（按照 key 分割后的） |
-    | Reduce | DataStream（按照 key 分割后的） | DataStream |
+| 算子 | 输入 | 输出 |
+|------|------|------|
+| Source | Kafka | DataStream |
+| Sink | DataStream | 外部文件 |
+| Map | DataStream | DataStream |
+| KeyBy | DataStream | DataStream（按照 key 分割后的） |
+| Reduce | DataStream（按照 key 分割后的） | DataStream |
 ##### 2. 支持基于处理时间的滚动窗口；
 ##### 3. 支持为算子指定并发度的功能；
 ##### 4. 支持以 DAG 形式编排使用所有支持的算子。
