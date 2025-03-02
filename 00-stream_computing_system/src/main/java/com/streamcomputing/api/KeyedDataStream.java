@@ -3,29 +3,23 @@ package com.streamcomputing.api;
 import java.util.function.BinaryOperator;
 
 /**
- * Represents a data stream that has been keyed by some property.
+ * Interface representing a keyed data stream.
  * @param <K> The type of the key
- * @param <T> The type of elements in the stream
+ * @param <V> The type of the values
  */
-public interface KeyedDataStream<K, T> {
+public interface KeyedDataStream<K, V> {
+    
     /**
      * Applies a reduce function to the keyed stream.
      * @param reducer The reduce function to apply
-     * @return A new DataStream with reduced elements
+     * @return A DataStream with the reduced values
      */
-    DataStream<T> reduce(BinaryOperator<T> reducer);
-
+    DataStream<V> reduce(BinaryOperator<V> reducer);
+    
     /**
-     * Sets the parallelism for the current operation.
+     * Sets the parallelism for the stream operations.
      * @param parallelism The number of parallel instances
-     * @return The KeyedDataStream with set parallelism
+     * @return The KeyedDataStream with configured parallelism
      */
-    KeyedDataStream<K, T> setParallelism(int parallelism);
-
-    /**
-     * Creates a tumbling window based on processing time.
-     * @param windowSizeMillis The size of the window in milliseconds
-     * @return A WindowedStream for further operations
-     */
-    WindowedStream<T> tumblingWindow(long windowSizeMillis);
+    KeyedDataStream<K, V> setParallelism(int parallelism);
 } 
